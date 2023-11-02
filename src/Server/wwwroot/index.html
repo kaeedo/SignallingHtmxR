@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>F# Minial API SignalR-HTMX</title>
+  </head>
+  <body hx-ext="signalr" signalr-connect="/chathub">
+    <h1>Hello World</h1>
+
+    <div signalr-subscribe="notifications">
+      <div id="notifications"></div>
+    </div>
+
+    <div
+      signalr-subscribe="chatMessage"
+      hx-target="#chatRoom"
+      hx-swap="beforeend"
+    >
+      <ul id="chatRoom"></ul>
+      <form id="form" signalr-send="SendMessage">
+        <input name="ChatMessage" />
+      </form>
+    </div>
+  </body>
+  <script src="https://unpkg.com/htmx.org@1.9.6"></script>
+  <script src="https://unpkg.com/@microsoft/signalr@next/dist/browser/signalr.js"></script>
+  <script src="/js/hx-signalr.js"></script>
+</html>

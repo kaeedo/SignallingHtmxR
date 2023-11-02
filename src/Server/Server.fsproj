@@ -1,0 +1,11 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="HtmlResult.fs" />
+    <Compile Include="ChatHub.fs" />
+    <Compile Include="NotificationService.fs" />
+    <Compile Include="Program.fs" />
+  </ItemGroup>
+</Project>
