@@ -1,4 +1,4 @@
-namespace Server
+namespace MinimalApi
 
 open Microsoft.AspNetCore.SignalR
 
