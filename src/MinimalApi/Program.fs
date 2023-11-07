@@ -3,7 +3,7 @@ open Microsoft.AspNetCore.Builder
 open Microsoft.Extensions.DependencyInjection
 open Microsoft.Extensions.Hosting
 open Microsoft.AspNetCore.Http
-open Server
+open MinimalApi
 
 [<EntryPoint>]
 let main args =
