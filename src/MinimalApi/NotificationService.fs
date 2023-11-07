@@ -11,7 +11,7 @@ type NotificationService(hubContext: IHubContext<ChatHub>) =
     override _.ExecuteAsync(cancellationToken: System.Threading.CancellationToken) =
         task {
             while not cancellationToken.IsCancellationRequested do
-                let message =
+                let randomStringMessage =
                     seq {
                         for _ in [ 0 .. Random.Shared.Next(11, 42) ] do
                             yield (char (Random.Shared.Next(32, 127))).ToString()
@@ -23,7 +23,7 @@ type NotificationService(hubContext: IHubContext<ChatHub>) =
                         "notifications",
                         $"""
                         <div id="notifications">
-                            Notification received at {DateTime.UtcNow.ToString("hh:mm:ss.F")}: {message}
+                            Notification received at {DateTime.UtcNow.ToString("hh:mm:ss.F")}: {randomStringMessage}
                         </div>
                     """
 

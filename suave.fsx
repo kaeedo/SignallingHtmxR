@@ -59,23 +59,20 @@ let chatroomWs (webSocket: WebSocket) (ctx: HttpContext) =
         let mutable loop = true
 
         while loop do
-            let! msg = webSocket.read()
+            let! msg = webSocket.read ()
 
             match msg with
             | (Text, data, true) ->
                 let str = UTF8.toString data
                 printfn "Received message: '%s'" str
                 let response = chatResponse str
-                let byteResponse =
-                    response
-                    |> System.Text.Encoding.ASCII.GetBytes
-                    |> ByteSegment
+                let byteResponse = response |> System.Text.Encoding.ASCII.GetBytes |> ByteSegment
                 do! webSocket.send Text byteResponse true
 
             | (Close, _, _) ->
-                let emprtyResponse = [||] |> ByteSegment
-                do! webSocket.send Close emprtyResponse true
-            
+                let emptyResponse = [||] |> ByteSegment
+                do! webSocket.send Close emptyResponse true
+
             | _ -> ()
     }
 
@@ -83,42 +80,37 @@ let notificationWs (webSocket: WebSocket) (ctx: HttpContext) =
     let notifyLoop =
         async {
             while true do
-                let message =
+                let randomStringMessage =
                     seq {
-                        for _ in [0..Random.Shared.Next(11, 42)] do
+                        for _ in [ 0 .. Random.Shared.Next(11, 42) ] do
                             yield (char (Random.Shared.Next(32, 127))).ToString()
                     }
                     |> String.concat String.Empty
 
-                let response = notificationResponse DateTime.UtcNow message
-                let byteResponse =
-                    response
-                    |> System.Text.Encoding.ASCII.GetBytes
-                    |> ByteSegment
+                let response = notificationResponse DateTime.UtcNow randomStringMessage
+                let byteResponse = response |> System.Text.Encoding.ASCII.GetBytes |> ByteSegment
                 let! choice = webSocket.send Text byteResponse true
-                do! Async.Sleep(Random.Shared.Next(1000,5000))
+                do! Async.Sleep(Random.Shared.Next(1000, 5000))
         }
 
     Async.Start(notifyLoop)
 
     socket {
         while true do
-            let! message = webSocket.read()
+            let! message = webSocket.read ()
+
             match message with
             | Ping, _, _ -> do! webSocket.send Pong ([||] |> ByteSegment) true
-            | _ -> () 
+            | _ -> ()
     }
 
 let app: WebPart =
-    choose [
-        path "/chatroom" >=> handShake chatroomWs
-        path "/notifications" >=> handShake notificationWs
-        GET >=>
-            choose [ 
-                path "/" >=> Successful.OK indexHtml >=> Writers.setMimeType "text/html" 
-            ] 
-            >=> Writers.addHeader "X-Clacks-Overhead" "GNU Terry Pratchett"
-        NOT_FOUND "Nothing found"
-    ]
+    choose
+        [ path "/chatroom" >=> handShake chatroomWs
+          path "/notifications" >=> handShake notificationWs
+          GET
+          >=> choose [ path "/" >=> Successful.OK indexHtml >=> Writers.setMimeType "text/html" ]
+          >=> Writers.addHeader "X-Clacks-Overhead" "GNU Terry Pratchett"
+          NOT_FOUND "Nothing found" ]
 
 startWebServer defaultConfig (app)
