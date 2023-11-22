@@ -5,7 +5,7 @@ open Microsoft.AspNetCore.SignalR
 type ChatHub() =
     inherit Hub()
 
-    member x.BaseSendMessage(message: string) =
+    member private x.BaseSendMessage(message: string) =
         base.Clients.All.SendAsync("chatMessage", $"""<li>Message received: {message}</li>""")
 
     member x.SendMessage(request: {| ChatMessage: string |}) =
